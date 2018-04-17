@@ -38,6 +38,18 @@ class ExportModule
         }
     }
 
+    public function addSpecificFile($file)
+    {
+    	if (!is_file($file) || !is_readable($file))
+    		$this->error("File {$file} is not exists or not readable");
+
+    	$this->addedFiles[] = [
+    		'filename' 		=> basename($file),
+			'path'			=> $file,
+			'is_specific'	=> true,
+    	];
+    }
+
     /* create file over $this->make() and add it to files list */
     public function addFile(array $data, $fileName = NULL)
     {
@@ -95,8 +107,12 @@ class ExportModule
 			$this->error("Can't create archive file");
 
 		foreach ($this->addedFiles as $file) {
-			if (!$zip->addFromString($file['filename'], file_get_contents($file['path']))) {
-				$this->error("Error while adding file {$file['path']} to archive {$filePath}");
+			if ($file['is_specific']) {
+				if (!$zip->addFile($file['path'], $file['filename']))
+					$this->error("Error while adding specific file {$file['path']} to archive {$filePath}");
+			}else{
+				if (!$zip->addFromString($file['filename'], file_get_contents($file['path'])))
+					$this->error("Error while adding file {$file['path']} to archive {$filePath}");
 			}
 
 			if ($deleteAddedFilesAfter)
