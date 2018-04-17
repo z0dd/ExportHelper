@@ -6,6 +6,7 @@ class ExportModule
 {
 	// Arr with added files
 	private $addedFiles = [];
+	private $archive = NULL;
 
 	// Path where all stored and maked files
 	private $_savePath = "/var/www/repo/";
@@ -48,6 +49,8 @@ class ExportModule
 			'path'			=> $file,
 			'is_specific'	=> true,
     	];
+
+    	return $this;
     }
 
     /* create file over $this->make() and add it to files list */
@@ -123,7 +126,9 @@ class ExportModule
 			$this->error("Error while closing archive {$filePath}");
 		}
 
-		return $filePath;
+		$this->archive = $filePath;
+
+		return $this->archive;
 	}
 
 	// Make download file forcefully. Exit after that
@@ -148,6 +153,14 @@ class ExportModule
 		    	@unlink($file);
 		    exit;
 		}
+	}
+
+	public function downloadArchive($deleteAfterDownload = TRUE)
+	{
+		if (is_null($this->archive))
+    		$this->error("You need make zip first");
+
+    	return self::forceDownload($this->archive, $deleteAfterDownload);
 	}
 
 	/* Generate unique filename with current date, default exctension - csv */

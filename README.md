@@ -32,31 +32,42 @@ $data = [
 $exportModule->addFile($data);
 ```
 
+You can add a specific file to:
+```php
+$exportModule->addSpecificFile($filepath);
+```
+
 And more...
 ```php
 $exportModule
+	->addSpecificFile($someFile)
 	->addFile($fooData)
 	->addFile($barData)
-	->addFile($bazData);
+	->addFile($bazData)
+	->addSpecificFile($anotherFile);
 ```
 
 And get you archive
 ```php
-$archive = $exportModule->makeZip('archive.zip');
-echo $archive; // /var/www/repo/archive.zip
+echo  $exportModule->makeZip('archive.zip'); // /var/www/repo/archive.zip
 ```
 
 And you can download it forcefully:
 ```php
-ExportModule::forceDownload($archive);
+$exportModule->downloadArchive();
 ```
 
 Or use it in case:
 ```php
-ExportModule::forceDownload(
-	$exportModule
+$exportModule
 	->addFile($foo)
 	->addFile($bar)
 	->makeZip();
-);
+
+$exportModule->downloadArchive();
+```
+
+You can use static func to force download any files
+```php
+ExportModule::forceDownload($filename);
 ```
